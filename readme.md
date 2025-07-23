@@ -1,10 +1,10 @@
 <div markdown=1 align="center">
 
-# PRIS - pattern recognition integer sequence.
+# PRIS \n pattern recognition integer sequence.
 
 A tool for detecting patterns and overlaps in data streams using parallel realtime stream sequence detection with a finite automoton.
 
-[![Upload Python Package](https://github.com/Strangemother/pris/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Strangemother/pris/actions/workflows/python-publish.yml)
+[![Upload Python Package](https://github.com/Strangemother/python-pris-alogrithm/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Strangemother/python-pris-alogrithm/actions/workflows/python-publish.yml)
 ![PyPI](https://img.shields.io/pypi/v/pris?label=pris)
 
 </div>
