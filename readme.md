@@ -1,10 +1,13 @@
 <div markdown=1 align="center">
 
-# PRIS \n pattern recognition integer sequence.
+# PRIS
+pattern recognition integer sequence
+
+---
 
 A tool for detecting patterns and overlaps in data streams using parallel realtime stream sequence detection with a finite automoton.
 
-[![Upload Python Package](https://github.com/Strangemother/python-pris-alogrithm/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Strangemother/python-pris-alogrithm/actions/workflows/python-publish.yml)
+[![Upload Python Package](https://github.com/Strangemother/python-pris-algorithm/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Strangemother/python-pris-algorithm/actions/workflows/python-publish.yml)
 ![PyPI](https://img.shields.io/pypi/v/pris?label=pris)
 
 </div>
@@ -37,7 +40,6 @@ hots, matches, drops = sq.table_insert_keys(['a', 'b', 'c'])
 (), ("event-name",), ()
 ```
 
-# The PRIS Algorithm
 
 PRIS aims to simplify the _silently complex_ task of finding sequences in streams, such as typed characters or object event detection, without storing cached assets.
 
@@ -45,6 +47,7 @@ Currently built into this Python library, PRIS is designed to identify and match
 
 The library operates in _real-time_, making it a versatile tool for applications like game 'cheat' input detection, sequence testing, and more.
 
+**Features:**
 
 + Feedforward sequencing
 + Works with stream data
@@ -53,7 +56,7 @@ The library operates in _real-time_, making it a versatile tool for applications
 + Minimal overhead (1 integer per path)
 + Unlimited path length
 
-## What is it.
+## What is it?
 
 > Parallel Sequence Detection on Realtime Streams with a Finite Automoton
 
