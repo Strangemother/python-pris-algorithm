@@ -1,8 +1,16 @@
-# Parallel Realtime Stream Sequence Detection with a Finite Automoton
+# PRIS - pattern recognition integer sequence.
 
-> `Sequences` aims to simplify the _silently complex_ task of finding sequences in streams, such as typed characters or object event detection, without storing cached assets.
+> A tool for detecting patterns and overlaps in data streams using parallel realtime stream sequence detection with a finite automoton.
 
-Sequences is a Python library designed to identify and match sequences within data streams, specializing in detecting patterns, overlaps, and recurring elements in various types of data, such as character strings or event sequences. The library operates in real-time, making it a versatile tool for applications like game 'cheat' input detection, sequence testing, and more.
+PRIS is designed to detect patterns or sequences in data streams. Capture character strings or event sequences without caching, states, or overhead. Ideal for game input detection and sequence testing.
+
+---
+
+PRIM aims to simplify the _silently complex_ task of finding sequences in streams, such as typed characters or object event detection, without storing cached assets.
+
+Currently built into this Python library, PRIM is designed to identify and match sequences within data streams, specializing in detecting patterns, overlaps, and recurring elements in various types of data, such as character strings or event sequences.
+
+The library operates in _real-time_, making it a versatile tool for applications like game 'cheat' input detection, sequence testing, and more.
 
 
 + Feedforward sequencing
@@ -12,11 +20,26 @@ Sequences is a Python library designed to identify and match sequences within da
 + Minimal overhead (1 integer per path)
 + Unlimited path length
 
+## What is it.
+
+> Parallel Sequence Detection on Realtime Streams with a Finite Automoton
+
+Or by definition: A [pattern recongition integer] sequence - table.
+
++ **Parallel**: Detect many sequences in parallel, such as detecting "wind" in "window" and "sidewinder"
++ **Sequence**: Maintain sequences, such as `W -> I -> N -> D`
++ **Detection**: Discover these sequences within streams of data, such as a file
++ **Realtime** Streams: Any stream of data, such as live media or sockets (unseekable records)
++ **a Finite Automoton**: the micro internal machinery of the algorithm, detecting sequences, and keeping indicies.
+
+
 ## How does it work
 
 1. Add sequences to detect (such as string)
 2. Input event streams (such as keyboard key presses)
 3. Capture events for sequence matches
+
+Internally the _current state_ of detections is a table of integers.
 
 ## Efficiencies
 
@@ -26,21 +49,17 @@ Sequences is a Python library designed to identify and match sequences within da
 
 Notably O(n) for iterating table live sequences (Any sequence with an index greater than `-1`)
 
----
 
-Sidenote:
+> [!NOTE]
+> I'm trying to cite any algorithm this (PRIS) mimics. However currently I haven't found a match. If you know the true name of this searching algorithm, please get in touch.
 
-I'm trying to cite the algorithm this mimics, however currently I haven't found a match.
-If you can help discover the true name of this searching algorithm, please get in touch.
-
----
 
 ## Usage
 
-To use the `Sequences` library, start by importing the library and initializing the Sequences object. Define your sequences and input them into the object. Here's a basic example:
+To use the `python-pris` library, start by importing the library and initializing the Sequences object. Define your sequences and input them into the object. Here's a basic example:
 
 ```py
-from src.sequences import Sequences
+from pris.sequences import Sequences
 
 # Define a sequence
 sequence = ('a', 'b', 'c')
@@ -57,9 +76,7 @@ Then execute detections:
 hots, matches, drops = sq.table_insert_keys(['a','b', 'c'])
 ```
 
----
-
-Possible Usages:
+### Possible Usages:
 
 + Game key input strings (combos etc..)
 + Parallel bit sequencing for streams
@@ -74,7 +91,7 @@ As an example, we define the Konami Code sequence and input it into the `Sequenc
 
 
 ```py
-from src.sequences import Sequences
+from pris.sequences import Sequences
 
 # Define the Konami Code sequence
 KONAMI_CODE = ('up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'b', 'a', 'start')
@@ -109,7 +126,7 @@ print("Complete", matches)  # Output: Complete ('konami',)
 With `Sequences` you can define a single sequence with functional positions. A functional position in a sequence is a position where a function is expected rather than a specific value. This function will be called with the actual value at that position, and the sequence will continue if the function returns `True`.
 
 ```py
-from src.sequences import Sequences
+from pris.sequences import Sequences
 
 def sink(v):
     return True
@@ -123,11 +140,10 @@ hots, matches, drops = sq.table_insert_keys(['a', 'b', 'c'])
 print("Matches", matches)  # Output: Matches ('a?c',)
 ```
 
-
 For a more grounded example, here we detect if the second character is a vowel:
 
 ```py
-from src.sequences import Sequences
+from pris.sequences import Sequences
 
 # Define a function to check if a character is a vowel
 def vowel(v):
@@ -163,7 +179,7 @@ In this example we simulate three different inputs: "pat", "put", and "pet". All
 A `key` for the applied sequence may be any value. If `None` The _key_ is a string of the given value
 
 ```py
-import src.sequences as sequences
+import pris.sequences as sequences
 
 
 WORDS = (
@@ -189,7 +205,7 @@ We see the _window_ tuple, literally prints as a stringyfied tuple:
 Inserting `"window"` with a key, changes the output:
 
 ```py
-import src.sequences as sequences
+import pris.sequences as sequences
 
 
 WORDS = (
@@ -209,7 +225,7 @@ trip = sq.insert_keys(*'window')
 Or we can define it on the initial input as a dictionary:
 
 ```py
-import src.sequences as sequences
+import pris.sequences as sequences
 
 
 WORDS = {
@@ -226,7 +242,7 @@ Alternatively we can use the `Sequence` class
 
 
 ```py
-import src.sequences as sequences
+import pris.sequences as sequences
 
 
 WORDS = (
@@ -246,7 +262,7 @@ trip = sq.insert_keys(*'window')
 ## More Example
 
 ```py
-import src.sequences as sequences
+import pris.sequences as sequences
 
 def sink(v):
     # Any value given is acceptable.
@@ -279,7 +295,7 @@ A very long string:
 containing your sequence `fragil`, and `a?i`, where `?` is any character:
 
 ```py
-from src.sequences import Sequences
+from pris.sequences import Sequences
 from collections import Counter
 
 # Define a sink function that always returns True
@@ -401,7 +417,7 @@ When using the Sequences library, three key concepts are essential: hots (hot st
 + **Drops**: Indicate sequences that were being tracked but have been dropped due to a mismatch.
 
 ```py
-from src.sequences import Sequences
+from pris.sequences import Sequences
 
 # Define sequences
 SEQUENCE_A = ('a', 'b', 'c')
@@ -457,16 +473,29 @@ For instance, if you've defined sequences "win" and "wind", and you insert the k
 Similar Algorithms:
 
 + Commentz-Walter algorithm:
+
     https://en.wikipedia.org/wiki/Commentz-Walter_algorithm
+
 + Boyer Moore string-search algorithm:
+
     https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string-search_algorithm
+
 + Knuth-Morris-Pratt (KMP) Algorithm:
+
     Efficiently searches for a word within a main text string by avoiding redundant checking.
+
 + Rabin-Karp Algorithm:
+
     Uses hashing to find any one of a set of pattern strings in a text.
+
 + Aho-Corasick Algorithm:
+
     Constructs a finite state machine from a set of strings to find all occurrences of these strings in a text.
+
 + Finite State Machines (FSM):
+
     Abstract machines to model sequences or patterns for recognition tasks.
+
 + Dynamic Programming:
+
     Techniques like the Longest Common Subsequence (LCS) can be adapted for certain types of sequence detection.
