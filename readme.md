@@ -21,7 +21,7 @@ pip install pris
 ## Quick Start
 
 ```py
-from pris.sequences import Sequences
+from pris import Sequences
 
 sequence = ('a', 'b', 'c')
 # Initialize the Sequences object and input the sequence
@@ -29,7 +29,7 @@ sq = Sequences()
 sq.input_sequence(sequence, 'event-name')
 ```
 
-Then execute detections:
+Execute detections:
 
 ```py
 hots, matches, drops = sq.table_insert_keys(['a', 'b', 'c'])
@@ -92,7 +92,7 @@ Notably O(n) for iterating table live sequences (Any sequence with an index grea
 To use the `python-pris` library, start by importing the library and initializing the Sequences object. Define your sequences and input them into the object. Here's a basic example:
 
 ```py
-from pris.sequences import Sequences
+from pris import Sequences
 
 # Define a sequence
 sequence = ('a', 'b', 'c')
@@ -124,7 +124,7 @@ As an example, we define the Konami Code sequence and input it into the `Sequenc
 
 
 ```py
-from pris.sequences import Sequences
+from pris import Sequences
 
 # Define the Konami Code sequence
 KONAMI_CODE = ('up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'b', 'a', 'start')
@@ -159,7 +159,7 @@ print("Complete", matches)  # Output: Complete ('konami',)
 With `Sequences` you can define a single sequence with functional positions. A functional position in a sequence is a position where a function is expected rather than a specific value. This function will be called with the actual value at that position, and the sequence will continue if the function returns `True`.
 
 ```py
-from pris.sequences import Sequences
+from pris import Sequences
 
 def sink(v):
     return True
@@ -176,7 +176,7 @@ print("Matches", matches)  # Output: Matches ('a?c',)
 For a more grounded example, here we detect if the second character is a vowel:
 
 ```py
-from pris.sequences import Sequences
+from pris import Sequences
 
 # Define a function to check if a character is a vowel
 def vowel(v):
@@ -212,7 +212,7 @@ In this example we simulate three different inputs: "pat", "put", and "pet". All
 A `key` for the applied sequence may be any value. If `None` The _key_ is a string of the given value
 
 ```py
-import pris.sequences as sequences
+from pris import sequences
 
 
 WORDS = (
@@ -238,7 +238,7 @@ We see the _window_ tuple, literally prints as a stringyfied tuple:
 Inserting `"window"` with a key, changes the output:
 
 ```py
-import pris.sequences as sequences
+from pris import sequences
 
 
 WORDS = (
@@ -258,7 +258,7 @@ trip = sq.insert_keys(*'window')
 Or we can define it on the initial input as a dictionary:
 
 ```py
-import pris.sequences as sequences
+from pris import sequences
 
 
 WORDS = {
@@ -275,7 +275,7 @@ Alternatively we can use the `Sequence` class
 
 
 ```py
-import pris.sequences as sequences
+from pris import sequences
 
 
 WORDS = (
@@ -295,7 +295,7 @@ trip = sq.insert_keys(*'window')
 ## More Example
 
 ```py
-import pris.sequences as sequences
+from pris import sequences
 
 def sink(v):
     # Any value given is acceptable.
@@ -316,7 +316,6 @@ WORDS = (
 
 sq = sequences.Sequences(WORDS)
 trip = sq.insert_keys(*'window')
-
 ```
 
 ---
