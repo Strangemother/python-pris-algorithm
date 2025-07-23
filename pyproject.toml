@@ -1,0 +1,50 @@
+[project]
+name = "pris"
+version = "0.5"
+description = "PRIS - pattern recognition integer sequence. Detect patterns or sequences in data streams."
+readme = "readme.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = []
+authors = [
+    { name="Strangemother", email="pris@strangemother.com" }
+]
+
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+
+dependencies = []
+
+[project.urls]
+Documentation = "https://github.com/Strangemother/python-pris#readme"
+Homepage = "https://github.com/Strangemother/python-pris"
+Repository = "https://github.com/Strangemother/python-pris"
+Issues = "https://github.com/Strangemother/python-pris/issues"
+
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pris/"]
+
+# [tool.hatch.build]
+# include = [
+#     "*.pyd",
+#     "pris/*.pyd",
+#     "src/pris/*.pyd"
+# ]
+# artifacts = ["*.so", "*.dll", "*.dylib", "src/pris/*.pyd"]
+
+# [tool.hatch.build.targets.wheel.force-include]
+# "src/pris/crc.pyd" = "pris/crc.pyd"
