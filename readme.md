@@ -1,14 +1,47 @@
+<div markdown=1 align="center">
+
 # PRIS - pattern recognition integer sequence.
 
-> A tool for detecting patterns and overlaps in data streams using parallel realtime stream sequence detection with a finite automoton.
+A tool for detecting patterns and overlaps in data streams using parallel realtime stream sequence detection with a finite automoton.
 
-PRIS is designed to detect patterns or sequences in data streams. Capture character strings or event sequences without caching, states, or overhead. Ideal for game input detection and sequence testing.
+[![Upload Python Package](https://github.com/Strangemother/pris/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Strangemother/pris/actions/workflows/python-publish.yml)
+![PyPI](https://img.shields.io/pypi/v/pris?label=pris)
 
----
+</div>
 
-PRIM aims to simplify the _silently complex_ task of finding sequences in streams, such as typed characters or object event detection, without storing cached assets.
 
-Currently built into this Python library, PRIM is designed to identify and match sequences within data streams, specializing in detecting patterns, overlaps, and recurring elements in various types of data, such as character strings or event sequences.
+> PRIS is designed to detect patterns or sequences in data streams. Capture character strings or event sequences without caching, states, or overhead. Ideal for game input detection and sequence testing.
+
+## Install
+
+```bash
+pip install pris
+```
+
+## Quick Start
+
+```py
+from pris.sequences import Sequences
+
+sequence = ('a', 'b', 'c')
+# Initialize the Sequences object and input the sequence
+sq = Sequences()
+sq.input_sequence(sequence, 'event-name')
+```
+
+Then execute detections:
+
+```py
+hots, matches, drops = sq.table_insert_keys(['a', 'b', 'c'])
+    # Matches
+(), ("event-name",), ()
+```
+
+# The PRIS Algorithm
+
+PRIS aims to simplify the _silently complex_ task of finding sequences in streams, such as typed characters or object event detection, without storing cached assets.
+
+Currently built into this Python library, PRIS is designed to identify and match sequences within data streams, specializing in detecting patterns, overlaps, and recurring elements in various types of data, such as character strings or event sequences.
 
 The library operates in _real-time_, making it a versatile tool for applications like game 'cheat' input detection, sequence testing, and more.
 
