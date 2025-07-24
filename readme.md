@@ -3,17 +3,17 @@
 # PRIS
 pattern recognition integer sequence
 
----
-
-A tool for detecting patterns and overlaps in data streams using parallel realtime stream sequence detection with a finite automoton.
-
 [![Upload Python Package](https://github.com/Strangemother/python-pris-algorithm/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Strangemother/python-pris-algorithm/actions/workflows/python-publish.yml)
 ![PyPI](https://img.shields.io/pypi/v/pris?label=pris)
+
+An algorithm and tool for detecting patterns in data streams using parallel realtime stream sequence detection with a finite automoton.
+
 
 </div>
 
 
-> PRIS is designed to detect patterns or sequences in data streams. Capture character strings or event sequences without caching, states, or overhead. Ideal for game input detection and sequence testing.
+> PRIS is designed to detect patterns or sequences in data streams. Capture character strings or event sequences without caching, states, or overhead.
+> Ideal for game input detection and sequence testing.
 
 ## Install
 
@@ -23,23 +23,49 @@ pip install pris
 
 ## Quick Start
 
+Working with `pris` is a two-step process:
+
+1. Create a `Sequences()` table
+2. Pump it with `.table_insert_keys(...)` for all your incoming bits.
+
+**Initiate a Sequences Table**
+
+Apply one or more _iterable_ types to a `pris.Sequences()` instance:
+
 ```py
 from pris import Sequences
-
+# something to detect
 sequence = ('a', 'b', 'c')
 # Initialize the Sequences object and input the sequence
 sq = Sequences()
-sq.input_sequence(sequence, 'event-name')
+# Load the sequence with an optional name
+sq.input_sequence(sequence, 'alphabet')
 ```
 
-Execute detections:
+The _sequence_ is a pattern to detect. The items within the sequence can by anything you want to capture in your stream.
+
+**Execute detections on a _stream_**
+
+Simulate a stream of three characters:
 
 ```py
 hots, matches, drops = sq.table_insert_keys(['a', 'b', 'c'])
     # Matches
-(), ("event-name",), ()
+(), ("alphabet",), ()
 ```
 
+That's it. Rinse-repeat this step for more:
+
+```py
+# and repeat...
+hots, matches, drops = sq.table_insert_keys(('d', 'e','f', 'a', 'b',))
+# Hot
+('alphabet',), (), ()
+```
+
+Read more about
+
+---
 
 PRIS aims to simplify the _silently complex_ task of finding sequences in streams, such as typed characters or object event detection, without storing cached assets.
 
@@ -377,27 +403,38 @@ We see when running the entire incoming string, it maintains all changes for a k
 
 For example we have a list of words and input `window`
 
-    ?: window
-    # ... 5 more frames.
+```py
 
-    WORD    POS  | NEXT | STRT | OPEN | HIT  | DROP
-    apples       |      |      |      |      |
-    window   1   |  i   |      |  #   |  #   |
-    ape          |      |      |      |      |
-    apex         |      |      |      |      |
-    extra        |      |      |      |      |
-    tracks       |      |      |      |      |
-    stack        |      |      |      |      |
-    yes          |      |      |      |      |
-    cape         |      |      |      |      |
-    cake         |      |      |      |      |
-    echo         |      |      |      |      |
-    win      1   |  i   |  #   |  #   |      |
-    wind     1   |  i   |  #   |  #   |      |
-    windy    1   |  i   |  #   |  #   |      |
-    w        1   |      |  #   |  #   |  #   |
-    ww       1   |  w   |  #   |  #   |      |
-    ddddd        |      |      |      |      |
+sq = Sequences()
+sq.input_sequence('fragil')
+# ... more sequences
+
+sq.print_state_table()
+```
+
+```py
+?: window
+# ... 5 more frames.
+
+WORD    POS  | NEXT | STRT | OPEN | HIT  | DROP
+apples       |      |      |      |      |
+window   1   |  i   |      |  #   |  #   |
+ape          |      |      |      |      |
+apex         |      |      |      |      |
+extra        |      |      |      |      |
+tracks       |      |      |      |      |
+stack        |      |      |      |      |
+yes          |      |      |      |      |
+cape         |      |      |      |      |
+cake         |      |      |      |      |
+echo         |      |      |      |      |
+win      1   |  i   |  #   |  #   |      |
+wind     1   |  i   |  #   |  #   |      |
+windy    1   |  i   |  #   |  #   |      |
+w        1   |      |  #   |  #   |  #   |
+ww       1   |  w   |  #   |  #   |      |
+ddddd        |      |      |      |      |
+```
 
 The library can detect overlaps and repeat letters. Therefore when _ending_ a sequence, you can _start_ another. For example the word `window` can also be a potential start of another `w...` sequence - such as the single char `w`.
 
@@ -405,7 +442,7 @@ The library can detect overlaps and repeat letters. Therefore when _ending_ a se
 reducing complexity from `O(n)` to `o(k)` through hot reduction.
 
 
-# Algorithm Understanding
+# PRIS Algorithm Understanding
 
 
 The algorithm was initially developed for securing WebSocket channels, allowing users to switch channels securely on the server side while tracking their movements. Each transaction marked a position along a path, defining what the user was allowed to subscribe to. This robust solution evolved to detect sequences of inputs, such as keys, where each key could be a character, object, or event. This approach is particularly useful for handling long input sequences without storing a historical cache, thereby maintaining efficiency.
@@ -484,19 +521,27 @@ print("Matches", matches)  # Output: Matches ('Sequence B',)
 print("Drops", drops)  # Output: Drops ()
 ```
 
----
+## Hot, Match, Drop
+
+Three types of events will bubble from an insert.
 
 ### Matches
+
+> A complete detection of a sequence from start to finish. Next event will likely be a _drop_
 
 In the context of the Sequences class, a "match" refers to a successful identification of a sequence within the provided iterable. When you insert a key (or character) into the sequence, the library checks if this key aligns with any of the predefined sequences. If it does, and the sequence is completed, it's considered a "match". For instance, if you've defined the sequence "win" and you sequentially insert the keys "w", "i", and "n", you'll get a match for the sequence "win".
 
 ### Misses (Drops)
+
+> A sequence failure on the most recent insert for a previously _hot_ sequence
 
 The term "drops" is synonymous with "misses". A "miss" or "drop" occurs when a key is inserted that doesn't align with the next expected key in any of the active sequences. This means that the current path being traced doesn't match any of the predefined sequences. When this happens, the sequence's position is reset (if reset_on_fail is set to True), effectively dropping or missing the sequence.
 
 For example, if you've defined the sequence "win" and you insert the keys "w" and "a", the sequence is dropped or missed because "a" doesn't follow "w" in the predefined sequence.
 
 ### Hots (Hot Starts)
+
+> A Sequence has _started_ and will continue sequences until a _match_ or _drop_ event occurs
 
 The concept of "hots" or "hot starts" is a performance optimization in the Sequences class. Instead of checking every possible sequence every time a key is inserted, the library maintains a "hot start" list for sequences that are currently active or have a high likelihood of matching. This list contains the starting characters of all predefined sequences. When a key is inserted that matches one of these starting characters, the sequence is considered "hot" and is actively checked for matches as subsequent keys are inserted.
 
