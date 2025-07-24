@@ -28,7 +28,6 @@ Working with `pris` is a two-step process:
 1. Create a `Sequences()` table
 2. Pump it with `.table_insert_keys(...)` for all your incoming bits.
 
-### Initiate a Sequences Table
 
 Apply one or more _iterable_ types to a `pris.Sequences()` instance:
 
@@ -42,11 +41,7 @@ sq = Sequences()
 sq.input_sequence(sequence, 'alphabet')
 ```
 
-The _sequence_ is a pattern to detect. The items within the sequence can by anything you want to capture in your stream.
-
-### Execute detections on a _stream_
-
-Simulate a stream of three characters:
+Simulate a stream:
 
 ```py
 hots, matches, drops = sq.table_insert_keys(['a', 'b', 'c'])
@@ -85,58 +80,55 @@ PRIS is designed to identify and match sequences within data streams, specializi
 
 The library operates in _real-time_, making it a versatile tool for applications like game 'cheat' input detection, sequence testing, and more.
 
-## What is it?
+## What is PRIS?
 
 > Parallel Sequence Detection on Realtime Streams with a Finite Automoton
 
 Or by definition: A [pattern recongition integer] sequence - table.
 
-+ **Parallel**: Detect many sequences in parallel, such as detecting "wind" in "window" and "sidewinder"
-+ **Sequence**: Maintain sequences, such as `W -> I -> N -> D`
-+ **Detection**: Discover these sequences within streams of data, such as a file
-+ **Realtime** Streams: Any stream of data, such as live media or sockets (unseekable records)
-+ **a Finite Automoton**: the micro internal machinery of the algorithm, detecting sequences, and keeping indicies.
 
-That's a fancy way to say _PRIS_ reads incoming strings, streams, or anything generally _iterable_. The "sequence" is also a string, stream, or anything iterable.
+A fancy way to say: PRIS detects and matches sequences in streaming data with no cache, states, or memory bloat. Sequences can be strings, iterables, or events.
 
-PRIS uses an integer per path (another name for a sequence) to detect if the entire sequence exists within the incoming stream.
+- **Parallel**: Detect many sequences in parallel ("wind" in "window" and "sidewinder")
+- **Sequence**: Stepwise matching (e.g., W → I → N → D)
+- **Detection**: Find sequences in a stream (file, events, etc.)
+- **Realtime**: Works with live or unseekable data (media, sockets, etc.)
+- **Finite Automaton**: Internally tracks position using the leanest structure possible (an int per path)
+
+---
 
 
-### How does it work
+## How It Works
 
-1. Add sequences to detect (such as string)
-2. Input event streams (such as keyboard key presses)
-3. Capture events for sequence matches
+1. Add sequences to detect
+2. Input events or stream bits (like key presses or file bytes)
+3. Capture matches, hot starts, or drops (misses)
 
-Internally the _current state_ of detections is a table of integers.
+Internally, PRIS keeps a table of indices (ints) per sequence. When an input matches, it increments the index; on failure, it resets. Everything is handled live, without caching history.
 
 ### Efficiencies
 
-1. O(k) sequence initiation using _hot start_
-2. One signed integer per path
-3. O(k) position testing - one test per _bit_ per path
-
-Notably O(n) for iterating table live sequences (Any sequence with an index greater than `-1`)
+- O(k) initiation via hot start
+- One int per path
+- O(k) position checks per event
+- O(n) for iterating all live sequences
 
 
 > [!NOTE]
-> I'm trying to cite any algorithm this (PRIS) mimics. However currently I haven't found a match. If you know the true name of this searching algorithm, please get in touch.
+> Still searching for a formal name for this algorithm. If you know it, get in touch!
 
 
 ## Usage
 
-To use the `python-pris` library, start by importing the library and initializing the Sequences object. Define your sequences and input them into the object. Here's a basic example:
+Basic usage:
 
 ```py
 from pris import Sequences
-
 # Define a sequence
 sequence = ('a', 'b', 'c')
-sequence_key = "abc"
-
 # Initialize the Sequences object and input the sequence
 sq = Sequences()
-sq.input_sequence(sequence, 'optional-key')
+sq.input_sequence(sequence, 'abc')
 ```
 
 Then execute detections:
@@ -147,16 +139,22 @@ hots, matches, drops = sq.table_insert_keys(['a','b', 'c'])
 
 ### Possible Usages:
 
-+ Game key input strings (combos etc..)
+- Game input/combos
 + Parallel bit sequencing for streams
     + Capturing tiny strings in big files
-    + readling pipe data during transit for sequences
+    + reading pipe data during transit for sequences
+- Command or protocol detection
 + Ordered structure testing, such as "commands" from a socket
     + such as oauth process matching
 
-## Example
 
-As an example, we define the Konami Code sequence and input it into the `Sequences` object. We then simulate button presses and check for sequence matches. The Konami Code is successfully matched when the entire sequence of buttons is pressed.
+## Examples
+
+### The Konami Code
+
+As an example, we define the Konami Code sequence and input it into the `Sequences` object. We then simulate button presses and check for sequence matches.
+
+The Konami Code is successfully matched when the entire sequence of buttons is pressed:
 
 
 ```py
@@ -190,26 +188,9 @@ print("Complete", matches)  # Output: Complete ('konami',)
 
 ## Functional Positions
 
-> Apply functions as keys within a sequence. If the _sink_ function return `True`, the sequence will continue matching, If `False` the sequence is dropped.
+> Sequences can include functions as wildcards.
 
-With `Sequences` you can define a single sequence with functional positions. A functional position in a sequence is a position where a function is expected rather than a specific value. This function will be called with the actual value at that position, and the sequence will continue if the function returns `True`.
-
-```py
-from pris import Sequences
-
-def sink(v):
-    return True
-
-sequence_with_sink = ('a', sink, 'c') # Will match a => ? => c
-sq = Sequences()
-sq.input_sequence(sequence_with_sink)
-
-hots, matches, drops = sq.table_insert_keys(['a', 'b', 'c'])
-
-print("Matches", matches)  # Output: Matches ('a?c',)
-```
-
-For a more grounded example, here we detect if the second character is a vowel:
+With `Sequences` you can define a single sequence with functional positions. If the _sink_ function return `True`, the sequence will continue matching, `False` the sequence is dropped. Here we detect if the second character is a vowel:
 
 ```py
 from pris import Sequences
@@ -261,14 +242,16 @@ sq = sequences.Sequences(WORDS)
 trip = sq.insert_keys(*'window')
 ```
 
-We see the _window_ tuple, literally prints as a stringyfied tuple:
+Alternatively, use the `Sequence` class:
 
-```py
-(
-    ("('w', 'i', 'n', 'd', 'o', 'w')", 'windy'),  # Activated
-    ("('w', 'i', 'n', 'd', 'o', 'w')",),          # Matches
-    ('windy',)                                    # Drops
-)
+```python
+from pris import Sequences, Sequence
+WORDS = [
+    Sequence('window', 'w', 'i', 'n', 'd', 'o', 'w'),
+    Sequence('windy'),
+]
+sq = Sequences(WORDS)
+trip = sq.insert_keys(*'window')
 ```
 
 Inserting `"window"` with a key, changes the output:
@@ -328,7 +311,9 @@ trip = sq.insert_keys(*'window')
 ```
 
 
-## More Example
+## More Examples
+
+Wildcards, functional sinks, and overlaps:
 
 ```py
 from pris import sequences
@@ -449,12 +434,12 @@ The library can detect overlaps and repeat letters. Therefore when _ending_ a se
 reducing complexity from `O(n)` to `o(k)` through hot reduction.
 
 
-# PRIS Algorithm Understanding
+# Algorithm Background
+
+PRIS was originally built for tracking secure channel switches in WebSocket servers, mapping user actions along a path with no cache. It’s since evolved to fast detection of any sequence (chars, events, objects) in real time, with no stored history and minimal resource usage.
 
 
-The algorithm was initially developed for securing WebSocket channels, allowing users to switch channels securely on the server side while tracking their movements. Each transaction marked a position along a path, defining what the user was allowed to subscribe to. This robust solution evolved to detect sequences of inputs, such as keys, where each key could be a character, object, or event. This approach is particularly useful for handling long input sequences without storing a historical cache, thereby maintaining efficiency.
-
-## Functionality
+## Functionality Breakdown
 
 1. **Hot Key Detection**
    - When an input key sequence is applied, the algorithm first tests for hot keys.
@@ -483,8 +468,8 @@ The algorithm was initially developed for securing WebSocket channels, allowing 
 
 ## Path Handling
 
-- **Non-Interference**: Paths cannot interfere with themselves. Multiple characters in a sequence do not conflict, ensuring smooth processing.
-- **Parallel Paths**: Different sequences with similar initial inputs can coexist without interference. For example, "windy" and "wind" can be processed in parallel without conflict.
+- **Non-Interference**: Paths cannot interfere with themselves. Multiple characters in a sequence do not conflict.
+- **Parallel Paths**: Sequences with similar inputs can coexist. For example, "windy" and "wind" can be processed in parallel without conflict.
 
 
 ## Understanding Hots, Matches, and Drops
@@ -555,34 +540,12 @@ The concept of "hots" or "hot starts" is a performance optimization in the Seque
 For instance, if you've defined sequences "win" and "wind", and you insert the key "w", both sequences become "hot" and are actively checked for matches as you continue to insert keys.
 
 
----
+## Similar or Related Algorithms
 
-Similar Algorithms:
-
-+ Commentz-Walter algorithm:
-
-    https://en.wikipedia.org/wiki/Commentz-Walter_algorithm
-
-+ Boyer Moore string-search algorithm:
-
-    https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string-search_algorithm
-
-+ Knuth-Morris-Pratt (KMP) Algorithm:
-
-    Efficiently searches for a word within a main text string by avoiding redundant checking.
-
-+ Rabin-Karp Algorithm:
-
-    Uses hashing to find any one of a set of pattern strings in a text.
-
-+ Aho-Corasick Algorithm:
-
-    Constructs a finite state machine from a set of strings to find all occurrences of these strings in a text.
-
-+ Finite State Machines (FSM):
-
-    Abstract machines to model sequences or patterns for recognition tasks.
-
-+ Dynamic Programming:
-
-    Techniques like the Longest Common Subsequence (LCS) can be adapted for certain types of sequence detection.
+- [Commentz-Walter](https://en.wikipedia.org/wiki/Commentz-Walter_algorithm)
+- [Boyer-Moore](https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string-search_algorithm)
+- [Knuth-Morris-Pratt (KMP)](https://en.wikipedia.org/wiki/Knuth–Morris–Pratt_algorithm)
+- [Rabin-Karp](https://en.wikipedia.org/wiki/Rabin–Karp_algorithm)
+- [Aho-Corasick](https://en.wikipedia.org/wiki/Aho–Corasick_algorithm)
+- [Finite State Machines (FSM)](https://en.wikipedia.org/wiki/Finite-state_machine)
+- [Dynamic Programming (LCS, etc)](https://en.wikipedia.org/wiki/Longest_common_subsequence_problem
