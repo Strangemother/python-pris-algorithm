@@ -548,4 +548,4 @@ For instance, if you've defined sequences "win" and "wind", and you insert the k
 - [Rabin-Karp](https://en.wikipedia.org/wiki/Rabin–Karp_algorithm)
 - [Aho-Corasick](https://en.wikipedia.org/wiki/Aho–Corasick_algorithm)
 - [Finite State Machines (FSM)](https://en.wikipedia.org/wiki/Finite-state_machine)
-- [Dynamic Programming (LCS, etc)](https://en.wikipedia.org/wiki/Longest_common_subsequence_problem
+- [Dynamic Programming (LCS, etc)](https://en.wikipedia.org/wiki/Longest_common_subsequence_problem)
