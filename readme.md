@@ -1,7 +1,7 @@
 <div markdown=1 align="center">
 
 # PRIS
-pattern recognition integer sequence
+Pattern Recognition Integer Sequence
 
 [![Upload Python Package](https://github.com/Strangemother/python-pris-algorithm/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Strangemother/python-pris-algorithm/actions/workflows/python-publish.yml)
 ![PyPI](https://img.shields.io/pypi/v/pris?label=pris)
@@ -28,7 +28,7 @@ Working with `pris` is a two-step process:
 1. Create a `Sequences()` table
 2. Pump it with `.table_insert_keys(...)` for all your incoming bits.
 
-**Initiate a Sequences Table**
+### Initiate a Sequences Table
 
 Apply one or more _iterable_ types to a `pris.Sequences()` instance:
 
@@ -44,7 +44,7 @@ sq.input_sequence(sequence, 'alphabet')
 
 The _sequence_ is a pattern to detect. The items within the sequence can by anything you want to capture in your stream.
 
-**Execute detections on a _stream_**
+### Execute detections on a _stream_
 
 Simulate a stream of three characters:
 
@@ -54,7 +54,9 @@ hots, matches, drops = sq.table_insert_keys(['a', 'b', 'c'])
 (), ("alphabet",), ()
 ```
 
-That's it. Rinse-repeat this step for more:
+That's it.
+
+Rinse-repeat this step for more:
 
 ```py
 # and repeat...
@@ -63,24 +65,25 @@ hots, matches, drops = sq.table_insert_keys(('d', 'e','f', 'a', 'b',))
 ('alphabet',), (), ()
 ```
 
-Read more about
+Read more about about [Hot](#hots-hot-starts), [Match](#matches), [Drop](#misses-drops), events below in [_Hot, Match, Drop_ events](#hot-match-drop).
 
----
+## Features
 
-PRIS aims to simplify the _silently complex_ task of finding sequences in streams, such as typed characters or object event detection, without storing cached assets.
+> PRIS aims to simplify the _silently complex_ task of finding sequences in streams, such as typed characters or object event detection, without storing cached assets.
 
-Currently built into this Python library, PRIS is designed to identify and match sequences within data streams, specializing in detecting patterns, overlaps, and recurring elements in various types of data, such as character strings or event sequences.
+PRIS is designed to identify and match sequences within data streams, specializing in detecting patterns, overlapping patterns, and recurring elements in various types of data, such as character strings or event sequences (e.g. `dict` types).
 
-The library operates in _real-time_, making it a versatile tool for applications like game 'cheat' input detection, sequence testing, and more.
 
 **Features:**
 
 + Feedforward sequencing
-+ Works with stream data
++ Works with streaming data of unlimited length
 + Detect overlapping and repeat sequences
 + functional sinking for inline dynamic _paths_
 + Minimal overhead (1 integer per path)
 + Unlimited path length
+
+The library operates in _real-time_, making it a versatile tool for applications like game 'cheat' input detection, sequence testing, and more.
 
 ## What is it?
 
@@ -94,8 +97,12 @@ Or by definition: A [pattern recongition integer] sequence - table.
 + **Realtime** Streams: Any stream of data, such as live media or sockets (unseekable records)
 + **a Finite Automoton**: the micro internal machinery of the algorithm, detecting sequences, and keeping indicies.
 
+That's a fancy way to say _PRIS_ reads incoming strings, streams, or anything generally _iterable_. The "sequence" is also a string, stream, or anything iterable.
 
-## How does it work
+PRIS uses an integer per path (another name for a sequence) to detect if the entire sequence exists within the incoming stream.
+
+
+### How does it work
 
 1. Add sequences to detect (such as string)
 2. Input event streams (such as keyboard key presses)
@@ -103,7 +110,7 @@ Or by definition: A [pattern recongition integer] sequence - table.
 
 Internally the _current state_ of detections is a table of integers.
 
-## Efficiencies
+### Efficiencies
 
 1. O(k) sequence initiation using _hot start_
 2. One signed integer per path
